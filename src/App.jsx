@@ -8,7 +8,6 @@ import axios from 'axios';
 
 function App() {
   const [step, setStep] = useState('setup'); // setup, taking, results
-  // const [step, setStep] = useState('loading'); // setup, taking, results
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
