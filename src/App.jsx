@@ -25,7 +25,7 @@ function App() {
   //   //   const response = await axios.get('https://jayvars-quizzerbackend.hf.space/chat/genQue', {
   //   //     params: {
   //   //       n: num,
-  //   //       q: topic
+  //   //       q: topics
   //   //     }
   //   //   });
   //   //   const fetchedQuestions = response.data.questions.map((qText) => ({
@@ -67,18 +67,19 @@ function App() {
   //   generateQuestions(topic, numQuestions);
   // };
 
-  const handleStartQuiz = async ({ topic, numQuestions }) => {
-    setLastConfig({ topic, numQuestions });
+  const handleStartQuiz = async ({ topic, numQuestions, isTextMode }) => {
+    setLastConfig({ topic, numQuestions, isTextMode });
     setUserAnswers([]);
     setCurrentQuestionIndex(0);
     setLoadingText("Generating Quiz...");
     setLoadingSubtext("Our AI is crafting the perfect questions for you.");
     setStep('loading');
-    
+
     try {
-      const response = await axios.get('https://jayvars-quizzerbackend.hf.space/chat/genQue', {
-        params: { n: numQuestions, q: topic }
-      });
+      const endpoint = isTextMode ? 'https://jayvars-quizzerbackend.hf.space/chat/genQueViaGivenContent' : 'https://jayvars-quizzerbackend.hf.space/chat/genQue';
+      const params = isTextMode ? { n: numQuestions, content: topic } : { n: numQuestions, q: topic };
+
+      const response = await axios.get(endpoint, { params });
 
       // const fetchedQuestions = response.data.questions.map((qText) => ({
       //   text: qText,
@@ -118,7 +119,14 @@ function App() {
           totalQuestionCount : questions.length,
           attempts : attempts
         };
-        const response = await axios.post('https://jayvars-quizzerbackend.hf.space/chat/evaluate', load);
+        
+        const actualEndpoint = lastConfig?.isTextMode ? 'https://jayvars-quizzerbackend.hf.space/chat/evalByContent' : 'https://jayvars-quizzerbackend.hf.space/chat/evaluate';
+        
+        const payload = lastConfig?.isTextMode 
+          ? { evaluate: load, content: lastConfig.topic } 
+          : load;
+
+        const response = await axios.post(actualEndpoint, payload);
         console.log(response);
         setsuggestion(response.data);
         setStep('results');
@@ -153,6 +161,7 @@ function App() {
           onSubmit={handleStartQuiz} 
           initialTopic={lastConfig?.topic || ''} 
           initialNumQuestions={lastConfig?.numQuestions || 5}
+          initialIsTextMode={lastConfig?.isTextMode || false}
         />
       )}
 

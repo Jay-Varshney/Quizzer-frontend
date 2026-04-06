@@ -65,7 +65,7 @@ const Results = ({ questions, userAnswers, onRestart, onRepeat, suggestion}) => 
       </div>
 
       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-        <button onClick={onRepeat} style={{ background: 'var(--secondary)' }}>Repeat Same Topic</button>
+        <button onClick={onRepeat} style={{ background: 'var(--secondary)' }}>Practice Again</button>
         <button onClick={onRestart}>Try Another Topic</button>
       </div>
     </div>
